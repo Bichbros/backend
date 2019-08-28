@@ -1,3 +1,6 @@
+
+// DB example
+
 const todos =  [
     {
       id: 1,
@@ -6,4 +9,4 @@ const todos =  [
     }
 ];
 
-export default todos;
+module.exports = todos;

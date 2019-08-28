@@ -1,6 +1,9 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import db from './db/db';
+const express = require('express');
+const bodyParser = require('body-parser');
+const db = require('./db/db');
+
+const NewsService = require('./service/news');
+const Collector = require('./utils/collector');
 
 //Set up express
 const app = express();
@@ -8,6 +11,19 @@ const app = express();
 //Parse incoming requests data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.get('/api/v1/test', (req, res) => {
+
+    const news = new NewsService();
+    const collector = new Collector(news);
+    const data = collector.fetchData();
+
+    res.status(200).send({
+        success: 'true',
+        message: 'todos retrieved successfully',
+        todos: db
+    })
+});
 
 app.get('/api/v1/todos', (req, res) => {
   res.status(200).send({
@@ -34,7 +50,7 @@ app.post('/api/v1/todos', (req, res) => {
     id: db.length + 1,
     title: req.body.title,
     description: req.body.description
-  }
+  };
 
   db.push(todo);
   return res.status(201).send({
@@ -47,7 +63,7 @@ app.get('/api/v1/todos/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
 
   db.map((todo) => {
-    if (todo.id == id) {
+    if (todo.id === id) {
       return res.status(200).send({
         success: 'true',
         message: 'todo retrieved successfully',
@@ -66,7 +82,7 @@ app.delete('/api/v1/todos/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
 
   db.map((todo, index) => {
-    if (todo.id == id) {
+    if (todo.id === id) {
       db.splice(index, 1);
       return res.status(200).send({
         success: 'true',
